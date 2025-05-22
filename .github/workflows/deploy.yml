@@ -22,12 +22,12 @@ jobs:
       - name: Install dependencies (if applicable)
         run: npm install # Or 'composer install', 'pip install', etc.
         # IMPORTANT: Adjust 'forbesganj' below to the actual subdirectory containing your package.json
-        working-directory: ./forbesganj 
+        working-directory: forbesganj 
 
       - name: Build project (if applicable)
         run: npm run build # Or 'npm run prod', 'webpack', etc.
         # IMPORTANT: Adjust 'forbesganj' below to the actual subdirectory where your build command should run
-        working-directory: ./forbesganj 
+        working-directory: forbesganj 
 
       # This is the manual approval step
       - name: Wait for manual approval
