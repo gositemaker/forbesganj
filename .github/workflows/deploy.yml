@@ -21,9 +21,13 @@ jobs:
 
       - name: Install dependencies (if applicable)
         run: npm install # Or 'composer install', 'pip install', etc.
+        # IMPORTANT: Adjust 'forbesganj' below to the actual subdirectory containing your package.json
+        working-directory: ./forbesganj 
 
       - name: Build project (if applicable)
         run: npm run build # Or 'npm run prod', 'webpack', etc.
+        # IMPORTANT: Adjust 'forbesganj' below to the actual subdirectory where your build command should run
+        working-directory: ./forbesganj 
 
       # This is the manual approval step
       - name: Wait for manual approval
@@ -52,6 +56,9 @@ jobs:
 
             echo "Copying files from runner to temporary directory on Hostinger..."
             # This assumes your build artifacts are in the current directory (after checkout and build)
+            # If your build artifacts are in a subdirectory, adjust the source path, e.g., 'your-project-subdirectory/dist/'
+            # If your project is in a subdirectory like 'forbesganj' after checkout, you might need to copy from that subdirectory.
+            # For example, if your build output is in 'forbesganj/dist', you'd use: rsync -avz --delete forbesganj/dist/ /tmp/deploy_temp/
             rsync -avz --delete . /tmp/deploy_temp/ || { echo "rsync failed. Check rsync installation on Hostinger and permissions."; exit 1; }
 
             echo "Moving files from temporary directory to final target directory..."
