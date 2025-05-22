@@ -42,25 +42,26 @@ jobs:
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           port: 22 # Default SSH port, change if Hostinger uses a different one
           script: |
-            # Navigate to your web root directory
-            cd ${{ secrets.HOSTINGER_TARGET_DIR }}
+            set -e # Exit immediately if a command exits with a non-zero status.
 
-            # Pull the latest code from your GitHub repository
-            # IMPORTANT: You need to set up SSH keys for GitHub on Hostinger
-            # or use a deploy key for your repository on Hostinger.
-            # A simpler approach for basic file transfer is using rsync or scp.
-            # For this example, we'll use rsync to copy files from the runner to Hostinger.
+            echo "Navigating to target directory: ${{ secrets.HOSTINGER_TARGET_DIR }}"
+            cd ${{ secrets.HOSTINGER_TARGET_DIR }} || { echo "Failed to change directory. Check HOSTINGER_TARGET_DIR."; exit 1; }
 
-            # Create a temporary directory on the Hostinger server to receive files
-            mkdir -p /tmp/deploy_temp
-            # Copy files from the GitHub Actions runner to the Hostinger server
+            echo "Creating temporary deployment directory..."
+            mkdir -p /tmp/deploy_temp || { echo "Failed to create temporary directory."; exit 1; }
+
+            echo "Copying files from runner to temporary directory on Hostinger..."
             # This assumes your build artifacts are in the current directory (after checkout and build)
-            rsync -avz --delete . /tmp/deploy_temp/
+            rsync -avz --delete . /tmp/deploy_temp/ || { echo "rsync failed. Check rsync installation on Hostinger and permissions."; exit 1; }
 
-            # Move files from the temporary directory to the final target directory
+            echo "Moving files from temporary directory to final target directory..."
             # This ensures a clean deployment and minimizes downtime
-            mv /tmp/deploy_temp/* .
-            rmdir /tmp/deploy_temp
+            mv /tmp/deploy_temp/* . || { echo "Failed to move files. Check permissions and target directory."; exit 1; }
+
+            echo "Removing temporary deployment directory..."
+            rmdir /tmp/deploy_temp || { echo "Failed to remove temporary directory. It might be non-empty."; }
+
+            echo "Deployment script completed."
 
             # Optional: Run post-deployment commands (e.g., clear cache, run migrations)
             # php artisan migrate --force
