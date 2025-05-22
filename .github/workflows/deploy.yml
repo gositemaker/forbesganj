@@ -1,0 +1,69 @@
+name: Deploy to Hostinger with Approval
+
+on:
+  push:
+    branches:
+      - main # Or 'develop', 'master', etc. - the branch you want to trigger deployment from
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    environment:
+      name: Production # This links to environment protection rules for approval
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js (if applicable)
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18' # Adjust if your project uses a different Node.js version
+
+      - name: Install dependencies (if applicable)
+        run: npm install # Or 'composer install', 'pip install', etc.
+
+      - name: Build project (if applicable)
+        run: npm run build # Or 'npm run prod', 'webpack', etc.
+
+      # This is the manual approval step
+      - name: Wait for manual approval
+        uses: trstringer/manual-approval@v1
+        with:
+          secret: ${{ github.TOKEN }}
+          approvers: 'your_github_username' # Replace with the GitHub username(s) of approvers
+          minimum-approvals: 1
+          timeout-minutes: 60 # How long to wait for approval before failing
+
+      - name: Deploy via SSH
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.HOSTINGER_HOSTNAME }}
+          username: ${{ secrets.HOSTINGER_USERNAME }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          port: 22 # Default SSH port, change if Hostinger uses a different one
+          script: |
+            # Navigate to your web root directory
+            cd ${{ secrets.HOSTINGER_TARGET_DIR }}
+
+            # Pull the latest code from your GitHub repository
+            # IMPORTANT: You need to set up SSH keys for GitHub on Hostinger
+            # or use a deploy key for your repository on Hostinger.
+            # A simpler approach for basic file transfer is using rsync or scp.
+            # For this example, we'll use rsync to copy files from the runner to Hostinger.
+
+            # Create a temporary directory on the Hostinger server to receive files
+            mkdir -p /tmp/deploy_temp
+            # Copy files from the GitHub Actions runner to the Hostinger server
+            # This assumes your build artifacts are in the current directory (after checkout and build)
+            rsync -avz --delete . /tmp/deploy_temp/
+
+            # Move files from the temporary directory to the final target directory
+            # This ensures a clean deployment and minimizes downtime
+            mv /tmp/deploy_temp/* .
+            rmdir /tmp/deploy_temp
+
+            # Optional: Run post-deployment commands (e.g., clear cache, run migrations)
+            # php artisan migrate --force
+            # php artisan cache:clear
+            # npm install --production # if you deploy node_modules
+            # npm run build # if you build on the server
