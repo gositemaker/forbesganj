@@ -31,7 +31,7 @@ jobs:
           host: ${{ secrets.HOSTINGER_HOSTNAME }}
           username: ${{ secrets.HOSTINGER_USERNAME }}
           key: ${{ secrets.SSH_PRIVATE_KEY }}
-          port: 21 # Default SSH port, change if Hostinger uses a different one
+          port: 22 # Default SSH port, change if Hostinger uses a different one
           script: |
             set -e # Exit immediately if a command exits with a non-zero status.
 
