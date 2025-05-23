@@ -21,7 +21,7 @@ jobs:
           secret: ${{ github.TOKEN }}
           # IMPORTANT: Replace 'your_github_username' below with the actual GitHub username(s) of the approver(s).
           # For multiple approvers, use a comma-separated list, e.g., 'user1,user2'.
-          approvers: 'gositemaker' 
+          approvers: 'Manish-singh-fbg' 
           minimum-approvals: 1
           timeout-minutes: 60 # How long to wait for approval before failing
 
