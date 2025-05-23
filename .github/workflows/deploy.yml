@@ -6,30 +6,13 @@ on:
       - main # Or 'develop', 'master', etc. - the branch you want to trigger deployment from
 
 jobs:
-  build-and-deploy:
+  deploy:
     runs-on: ubuntu-latest
     environment:
       name: Production # This links to environment protection rules for approval
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
-
-      - name: Set up Node.js (if applicable)
-        uses: actions/setup-node@v4
-        with:
-          node-version: '18' # Adjust if your project uses a different Node.js version
-
-      - name: Install dependencies (if applicable)
-        run: npm install # Or 'composer install', 'pip install', etc.
-        # IMPORTANT: If your package.json is NOT at the root of your repository (e.g., in a subdirectory like 'my-app/'),
-        # uncomment the line below and adjust the path accordingly.
-        # working-directory: my-app 
-
-      - name: Build project (if applicable)
-        run: npm run build # Or 'npm run prod', 'webpack', etc.
-        # IMPORTANT: If your build command needs to run in a subdirectory (e.g., 'my-app/'),
-        # uncomment the line below and adjust the path accordingly.
-        # working-directory: my-app 
 
       # This is the manual approval step
       - name: Wait for manual approval
@@ -57,9 +40,8 @@ jobs:
             mkdir -p /tmp/deploy_temp || { echo "Failed to create temporary directory."; exit 1; }
 
             echo "Copying files from runner to temporary directory on Hostinger..."
-            # This assumes your build artifacts are in the current directory (after checkout and build).
-            # If your project is in a subdirectory (e.g., 'my-app/') and your build output is in 'my-app/dist/',
-            # you would adjust the source path like this: rsync -avz --delete my-app/dist/ /tmp/deploy_temp/
+            # This command copies all files from the root of your checked-out GitHub repository
+            # to the temporary directory on Hostinger.
             rsync -avz --delete . /tmp/deploy_temp/ || { echo "rsync failed. Check rsync installation on Hostinger and permissions."; exit 1; }
 
             echo "Moving files from temporary directory to final target directory..."
@@ -71,8 +53,6 @@ jobs:
 
             echo "Deployment script completed."
 
-            # Optional: Run post-deployment commands (e.g., clear cache, run migrations)
-            # php artisan migrate --force
-            # php artisan cache:clear
-            # npm install --production # if you deploy node_modules
-            # npm run build # if you build on the server
+            # Optional: Run post-deployment commands (e.g., clear PHP cache, if applicable)
+            # For PHP applications, you might need to clear opcache or other caches.
+            # Example: php -r "opcache_reset();"
