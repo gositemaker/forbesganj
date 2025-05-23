@@ -9,7 +9,7 @@ jobs:
   deploy:
     runs-on: ubuntu-latest
     environment:
-      name: Production # This links to environment protection rules for approvals
+      name: Production # This links to environment protection rules for approval
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -19,9 +19,9 @@ jobs:
         uses: trstringer/manual-approval@v1
         with:
           secret: ${{ github.TOKEN }}
-          # IMPORTANT: Replace 'your_github_username' below with the actual GitHub username(s) of the approver(s).
+          # IMPORTANT: Replace 'Manish-singh-fbg' below with the actual GitHub username(s) of the approver(s).
           # For multiple approvers, use a comma-separated list, e.g., 'user1,user2'.
-          approvers: 'Manish-singh-fbg' 
+          approvers: 'Manish-singh-fbg'
           minimum-approvals: 1
           timeout-minutes: 60 # How long to wait for approval before failing
 
@@ -31,7 +31,7 @@ jobs:
           host: ${{ secrets.HOSTINGER_HOSTNAME }}
           username: ${{ secrets.HOSTINGER_USERNAME }}
           key: ${{ secrets.SSH_PRIVATE_KEY }}
-          port: 22 # Default SSH port, change if Hostinger uses a different one
+          port: 21 # Default SSH port, change if Hostinger uses a different one
           script: |
             set -e # Exit immediately if a command exits with a non-zero status.
 
