@@ -3,7 +3,7 @@ name: Deploy to Hostinger with Approval
 on:
   push:
     branches:
-      - main # Or 'develop', 'master', etc. -- the branch you want to trigger deployment from
+      - main # Or 'develop', 'master', etc. - the branch you want to trigger deployment from
 
 jobs:
   deploy:
@@ -19,7 +19,9 @@ jobs:
         uses: trstringer/manual-approval@v1
         with:
           secret: ${{ github.TOKEN }}
-          approvers: 'your_github_username' # Replace with the GitHub username(s) of approvers
+          # IMPORTANT: Replace 'your_github_username' below with the actual GitHub username(s) of the approver(s).
+          # For multiple approvers, use a comma-separated list, e.g., 'user1,user2'.
+          approvers: 'gositemaker' 
           minimum-approvals: 1
           timeout-minutes: 60 # How long to wait for approval before failing
 
