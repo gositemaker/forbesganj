@@ -9,7 +9,7 @@ jobs:
   deploy:
     runs-on: ubuntu-latest
     environment:
-      name: Production # This links to environment protection rules for approval
+      name: Production # This links to environment protection rules for approvals
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
